@@ -1,0 +1,29 @@
+name: Integration test
+on:
+  push:
+    branches:
+      - main
+jobs:
+  Firebase_Test_Lab:
+    runs-on: macos-latest
+    steps:
+      - name: Setup repository
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable'
+      - name: Pub Get
+        run: flutter pub get
+      - id: Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCLOUD_KEY }}
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+      - name: Run Android integration tests
+        run: ./android_integration.sh
